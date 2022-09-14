@@ -24,7 +24,7 @@ const groupByWithSum = groupBy({
   }
 });
 
-const res = groupByWithSum(arr, 'name', 'money, weight');
+const res = groupByWithSum(arr, 'who', 'money, weight');
 /* [
     { who: 'man', money: 461, weight: 60 },
     { who: 'woman', money: 295, weight: 55 }
@@ -40,7 +40,7 @@ const groupByWithSum = groupBy({
   }
 });
 
-const res = groupByWithSum(arr, 'name', 'money, weight');
+const res = groupByWithSum(arr, 'who', 'money, weight');
 /* [
     { who: 'man', money: 461, weight: 60 },
     { who: 'woman', money: 295, weight: 55 }
