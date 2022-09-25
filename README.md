@@ -15,7 +15,74 @@ const arr = [
   { name: 'Katya', who: 'woman', money: 290, weight: 40 },
   { name: 'Olya', who: 'woman', money: 5, weight: 15 }
 ];
+```
+### v2
+```js
+// use rowCallback as a function
+const groupByWithSum = groupBy({
+  rowCalculator:function(previousValue, currentValue, key) {
+    if (key === 'weight') {
+      return (previousValue || 0) + (currentValue || 0);  
+    }
+    return currentValue;
+  }
+});
 
+// or as an object
+const groupByWithSum = groupBy({
+  rowCalculator: {
+    money: function(previousValue, currentValue) {
+      return (previousValue || 0) + (currentValue || 0);
+    }
+  }
+});
+
+const res = groupByWithSum(arr, 'who', 'money, weight');
+/* [
+    { who: 'man', money: 461, weight: 60 },
+    { who: 'woman', money: 295, weight: 55 }
+  ]
+*/
+```
+
+#### Concat strings
+```js
+const groupByWithConcat = groupBy({
+  rowCalculator: {
+    money: function(previousValue, currentValue) {
+      if (currentValue && previousValue) {
+        return [ previousValue, currentValue ].join('-');
+      }
+      if (currentValue) {
+        return currentValue;
+      }
+      return previousValue;
+    }
+  }
+});
+
+const result = groupByWithConcat(arr, 'who', 'money');
+/* [
+     { who: 'man', money: '100-263-98' },
+     { who: 'woman', money: '290-5' }
+  ]
+*/
+```
+
+v2 groupByWith expects an object with optional callbacks:
+```ts
+groupBy({
+  rowCalculator:
+      (function(previousValue: any, currentValue: any, key: string): number) |
+      { 
+        "<nameOfProp>": function(previousValue: any, currentValue: any): number
+      }, // callback to process row
+  totalCalculator: function(value: any, key: string): any, // callback to process final results
+})
+```
+
+### v1
+```js
 // use rowCallback
 const groupByWithSum = groupBy({
   rowCalculator: function(target, value, key) {
@@ -48,11 +115,11 @@ const res = groupByWithSum(arr, 'who', 'money, weight');
 */
 ```
 
-groupByWith expects an object with optional callbacks:
-```js
+v1 groupByWith expects an object with optional callbacks:
+```ts
 groupBy({
-  rowCalculator: function(target, value, key){}, // callback to process row
-  totalCalculator: function(value, key){}, // callback to process final results
+  rowCalculator: function(target: object, value: any, key: string): void, // callback to process row
+  totalCalculator: function(value: any, key: string): any, // callback to process final results
 })
 ```
 and returns a function with params:

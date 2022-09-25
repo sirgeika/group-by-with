@@ -7,6 +7,8 @@ const defaultCallbacks = require('./lib/default-callbacks');
 const defaultRowCalculator = defaultCallbacks.rowCallback;
 const defaultTotalCalculator = defaultCallbacks.totalCallback;
 
+const normalizeCallbacks = require('./lib/normalize-callbacks');
+
 const validateIntersection = function(props1, props2) {
   if (props2) {
     const arr1 = props1.split(',');
@@ -70,6 +72,14 @@ module.exports = function({
 
     validateParams(array, groupedProps, calcProps);
 
+    const normalizedRowCalculator = normalizeCallbacks(
+      rowCalculator, calcProps, defaultRowCalculator
+    );
+
+    const normalizedTotalCalculator = normalizeCallbacks(
+      totalCalculator, calcProps, defaultTotalCalculator
+    );
+
     const map = new Map();
 
     for (const elem of array) {
@@ -82,7 +92,7 @@ module.exports = function({
       const newCalculated = accumulate(
         calculated,
         calculatedValues,
-        rowCalculator
+        normalizedRowCalculator
       );
       map.set(key, [ groupedValues, newCalculated ]);
     }
@@ -93,7 +103,7 @@ module.exports = function({
       const calculated = {};
 
       for (let [ key, value ] of Object.entries(calc)) {
-        calculated[key] = totalCalculator(value, key);
+        calculated[key] = normalizedTotalCalculator[key](value, key);
       }
 
       result.push({...grouped, ...calculated});
