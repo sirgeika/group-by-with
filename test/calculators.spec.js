@@ -100,13 +100,14 @@ describe('Test sum', function() {
 
   it('With different calculations', function() {
     const groupByWithSumAvg = groupBy({
-      rowCalculator: function(target, value, key) {
-        if (key === 'money') {
-          target[key] = target[key] || 0;
-          target[key] += (value || 0);
-        } else {
-          target[key] = target[key] || [];
-          target[key].push((value || 0));
+      rowCalculator: function(previousValue, currentValue, key) {
+        switch (key) {
+          case 'money':
+            return (previousValue || 0) + (currentValue || 0);
+          default:
+            previousValue = previousValue || [];
+            previousValue.push((currentValue || 0));
+            return previousValue;
         }
       },
       totalCalculator: function(value, key) {
